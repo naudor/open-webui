@@ -18,6 +18,7 @@ ARG GID=0
 
 ######## WebUI frontend ########
 FROM --platform=linux/amd64 node:22-alpine3.20 AS build
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 ARG BUILD_HASH
 
 WORKDIR /app
