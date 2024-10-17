@@ -17,6 +17,9 @@ ARG UID=0
 ARG GID=0
 
 ######## WebUI frontend ########
+# INICI - Possat per l'Arnau perque compili al Google Cloud
+ARG BUILDPLATFORM=linux/amd64 
+# FI - Possat per l'Arnau perque compili al Google Cloud
 FROM --platform=$BUILDPLATFORM node:21-alpine3.19 as build
 ARG BUILD_HASH
 
