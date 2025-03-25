@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { prompts } from '$lib/stores';
+	import { prompts, user } from '$lib/stores';
 	import {
 		findWordIndices,
 		getUserPosition,
@@ -74,8 +74,20 @@
 		}
 
 		if (command.content.includes('{{USER_LOCATION}}')) {
-			const location = await getUserPosition();
+			let location;
+			try {
+				location = await getUserPosition();
+			} catch (error) {
+				toast.error($i18n.t('Location access not allowed'));
+				location = 'LOCATION_UNKNOWN';
+			}
 			text = text.replaceAll('{{USER_LOCATION}}', String(location));
+		}
+
+		if (command.content.includes('{{USER_NAME}}')) {
+			console.log($user);
+			const name = $user.name || 'User';
+			text = text.replaceAll('{{USER_NAME}}', name);
 		}
 
 		if (command.content.includes('{{USER_LANGUAGE}}')) {
@@ -114,13 +126,16 @@
 		const chatInputElement = document.getElementById('chat-input');
 
 		await tick();
-
 		if (chatInputContainerElement) {
 			chatInputContainerElement.style.height = '';
 			chatInputContainerElement.style.height =
 				Math.min(chatInputContainerElement.scrollHeight, 200) + 'px';
+		}
 
-			chatInputElement?.focus();
+		await tick();
+		if (chatInputElement) {
+			chatInputElement.focus();
+			chatInputElement.dispatchEvent(new Event('input'));
 		}
 	};
 </script>
@@ -128,9 +143,9 @@
 {#if filteredPrompts.length > 0}
 	<div
 		id="commands-container"
-		class="pl-3 pr-14 mb-3 text-left w-full absolute bottom-0 left-0 right-0 z-10"
+		class="px-2 mb-2 text-left w-full absolute bottom-0 left-0 right-0 z-10"
 	>
-		<div class="flex w-full rounded-xl border border-gray-50 dark:border-gray-850">
+		<div class="flex w-full rounded-xl border border-gray-100 dark:border-gray-850">
 			<div
 				class="max-h-60 flex flex-col w-full rounded-xl bg-white dark:bg-gray-900 dark:text-gray-100"
 			>
